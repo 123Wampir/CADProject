@@ -6,6 +6,7 @@ import { Color, Mesh, Side, Vector2, Vector3 } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { BODY, FACE, POINT } from 'src/shared/model';
 import * as Triangulation from 'src/shared/Triangulation'
+import * as geometry from 'src/shared/geometry'
 
 @Component({
   selector: 'app-root',
@@ -53,64 +54,72 @@ hex.push(new POINT(0, 0, -1));
 let fpts = FACE.CreateFaceFromPoints(hex);
 faces.push(fpts);*/
 /*  CUBE  */
-let fpts = [];
-let pts: POINT[] = [];
-pts.push(new POINT(0, 0, 0));
-pts.push(new POINT(0, 0, 1));
-pts.push(new POINT(0, 1, 0));
-pts.push(new POINT(0, 1, 1));
-pts.push(new POINT(1, 0, 0));
-pts.push(new POINT(1, 0, 1));
-pts.push(new POINT(1, 1, 0));
-pts.push(new POINT(1, 1, 1));
-fpts.push(pts[0]);
-fpts.push(pts[1]);
-fpts.push(pts[3]);
-fpts.push(pts[2]);
-let face: FACE = FACE.CreateFaceFromPoints(fpts);
-faces.push(face);
-fpts = [];
-fpts.push(pts[0]);
-fpts.push(pts[1]);
-fpts.push(pts[5]);
-fpts.push(pts[4]);
-face = FACE.CreateFaceFromPoints(fpts);
-faces.push(face);
-fpts = [];
-fpts.push(pts[0]);
-fpts.push(pts[4]);
-fpts.push(pts[6]);
-fpts.push(pts[2]);
-face = FACE.CreateFaceFromPoints(fpts);
-faces.push(face);
-fpts = [];
-fpts.push(pts[4]);
-fpts.push(pts[6]);
-fpts.push(pts[7]);
-fpts.push(pts[5]);
-face = FACE.CreateFaceFromPoints(fpts);
-faces.push(face);
-fpts = [];
-fpts.push(pts[1]);
-fpts.push(pts[5]);
-fpts.push(pts[7]);
-fpts.push(pts[3]);
-face = FACE.CreateFaceFromPoints(fpts);
-faces.push(face);
-fpts = [];
-fpts.push(pts[2]);
-fpts.push(pts[6]);
-fpts.push(pts[7]);
-fpts.push(pts[3]);
-face = FACE.CreateFaceFromPoints(fpts);
-faces.push(face);
-let body = BODY.CreateSolid(faces);
+// let fpts = [];
+// let pts: POINT[] = [];
+// pts.push(new POINT(0, 0, 0));
+// pts.push(new POINT(0, 0, 1));
+// pts.push(new POINT(0, 1, 0));
+// pts.push(new POINT(0, 1, 1));
+// pts.push(new POINT(1, 0, 0));
+// pts.push(new POINT(1, 0, 1));
+// pts.push(new POINT(1, 1, 0));
+// pts.push(new POINT(1, 1, 1));
+// fpts.push(pts[0]);
+// fpts.push(pts[1]);
+// fpts.push(pts[3]);
+// fpts.push(pts[2]);
+// let face: FACE = FACE.CreateFaceFromPoints(fpts);
+// faces.push(face);
+// fpts = [];
+// fpts.push(pts[0]);
+// fpts.push(pts[1]);
+// fpts.push(pts[5]);
+// fpts.push(pts[4]);
+// face = FACE.CreateFaceFromPoints(fpts);
+// faces.push(face);
+// fpts = [];
+// fpts.push(pts[0]);
+// fpts.push(pts[4]);
+// fpts.push(pts[6]);
+// fpts.push(pts[2]);
+// face = FACE.CreateFaceFromPoints(fpts);
+// faces.push(face);
+// fpts = [];
+// fpts.push(pts[4]);
+// fpts.push(pts[6]);
+// fpts.push(pts[7]);
+// fpts.push(pts[5]);
+// face = FACE.CreateFaceFromPoints(fpts);
+// faces.push(face);
+// fpts = [];
+// fpts.push(pts[1]);
+// fpts.push(pts[5]);
+// fpts.push(pts[7]);
+// fpts.push(pts[3]);
+// face = FACE.CreateFaceFromPoints(fpts);
+// faces.push(face);
+// fpts = [];
+// fpts.push(pts[2]);
+// fpts.push(pts[6]);
+// fpts.push(pts[7]);
+// fpts.push(pts[3]);
+// face = FACE.CreateFaceFromPoints(fpts);
+// faces.push(face);
+// let body = BODY.CreateSolid(faces);
 
 
-console.log(body);
-Triangulation.TriangulateBody(body);
-console.log(body);
+// console.log(body);
+// Triangulation.TriangulateBody(body);
+// console.log(body);
 
+
+/*Многоугольник*/
+
+let fc = geometry.CreateObject(0, 0, 0, 10, 10, 20, 12);
+let body = BODY.CreateSolid([fc]);
+//console.log(body);
+//Triangulation.TriangulateBody(body);
+//console.log(body);
 
 
 /* Отображение полигонов */
