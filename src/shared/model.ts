@@ -26,6 +26,10 @@ export class POINT {
     })
     return vec;
   }
+  static GetLength(p1:POINT,p2:POINT): number {
+    let length = Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2) + Math.pow(p1.z - p2.z, 2))
+    return length;
+  }
 }
 
 
@@ -70,11 +74,12 @@ export class FACE {
 
   static CreateFaceFromPoints(points: POINT[]): FACE {
     let face = new FACE();
-    face.points = points;
-    face.edges = EDGE.CreateEdgeFromPoints(points);
-    let lastEdge = EDGE.CreateEdgeFrom2Point(points[0], points[points.length - 1]);
+    face.points = points.slice(0);
+    face.edges = EDGE.CreateEdgeFromPoints(face.points);
+    let lastEdge = EDGE.CreateEdgeFrom2Point(face.points[0], face.points[face.points.length - 1]);
     face.edges.push(lastEdge);
-    face.normal = Triangulation.GetNormal(points[0], points[1], points[2]);
+    face.normal = Triangulation.GetNormal(face.points[0], face.points[1], face.points[2]);
+    face.normal.Normalize();
     return face;
   }
   static RemovePointFromMesh(mesh: FACE, point: POINT): FACE {
