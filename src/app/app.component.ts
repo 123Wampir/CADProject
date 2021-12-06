@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
 import * as THREE from 'three';
-import * as EARCUT from "earcut"
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { Color, Mesh, Side, Vector2, Vector3 } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { BODY, FACE, POINT } from 'src/shared/model';
 import * as Triangulation from 'src/shared/Triangulation'
 import * as Geometry from 'src/shared/geometry'
+import * as CADMath from 'src/shared/CADMath'
 
 @Component({
   selector: 'app-root',
@@ -45,32 +45,51 @@ scene.add(light);
 
 
 /*Многоугольник*/
-let body = Geometry.CreateObject(0, 0, 0, 1, 2, 10);
-Triangulation.TriangulateBody(body);
+let body = Geometry.CreateObject(0, 0, 0, 1, 1.25, 12);
+Triangulation.TriangulateBody(body, 0.5);
 console.log(body);
 
+let a: number[][] = []
+a[0] = [];
+a[0][0] = 2;
+a[0][1] = 4;
+a[0][2] = 1;
+a[1] = []
+a[1][0] = 5;
+a[1][1] = 2;
+a[1][2] = 1;
+a[2] = []
+a[2][0] = 2;
+a[2][1] = 3;
+a[2][2] = 4;
+let b = [36, 47, 37];
+let x = CADMath.ClassicGauss(a, b, b.length);
+console.log(a);
+console.log(b);
+console.log(x);
+
+let arr=[0,0,1,2];
+CADMath.Diff(CADMath.Fall,arr,0.05);
 
 /* Отображение полигонов */
 body.mesh.forEach(mesh => mesh.edges.forEach(edge => {
   let geom = new THREE.EdgesGeometry().setFromPoints(POINT.PointsToVec3(edge.points));
-  let mat = new THREE.LineBasicMaterial({ color: 0xff0000 ,linewidth: 1});
+  let mat = new THREE.LineBasicMaterial({ color: 0xff0000, linewidth: 1 });
   let faceRES = new THREE.Line(geom, mat);
   scene.add(faceRES);
 }))
 
 /* Отображение тела */
-/*body.mesh.forEach(mesh => {
+body.mesh.forEach(mesh => {
   let r = Math.random();
   let g = Math.random();
   let b = Math.random();
-  console.log(mesh)
-  let arr=POINT.PointsToVec3(mesh.points);
-  console.log(arr);
+  let arr = POINT.PointsToVec3(mesh.points);
   let geom = new THREE.BufferGeometry().setFromPoints(arr);
-  let mat = new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide });
+  let mat = new THREE.MeshBasicMaterial({ color: new Color(r, g, b), side: THREE.DoubleSide });
   let faceRES = new THREE.Mesh(geom, mat);
   scene.add(faceRES);
-})*/
+})
 
 
 
