@@ -7,11 +7,13 @@ export class POINT {
   y: number;
   z: number;
   vec3: Vector3;
+  angle:number;
   constructor(x: number, y: number, z: number) {
     this.x = x;
     this.y = y;
     this.z = z;
     this.vec3 = new Vector3(x, y, z);
+    this.angle=0;
   }
   Normalize() {
     this.vec3 = this.vec3.normalize();

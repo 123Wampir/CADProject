@@ -134,21 +134,31 @@ export function triangulateMesh(mesh: FACE) {
     pts.push(B);
     pts.push(C);
     let face2 = FACE.CreateFaceFromPoints(pts);
-    //face2=TriangleAccuracy(face2,0.5);
     newFaces.push(face2);
-    //console.log(newFaces)
-    //ReplaceFaceFromBody(body, mesh, newFaces);
     return newFaces;
 }
 
-export function TriangulateBody(body: BODY,meshSize:number) {
-    let nOfPolygons=0;
-    for (let i = 0; i < 20; i++) {
+export function TriangulateBody(body: BODY, meshSize: number) {
+    let nOfPolygons = 0;
+    for (let i = 0; i < 10; i++) {
         let newMesh: FACE[] = [];
         body.mesh.forEach(mesh => {
-            let tri;
-            if (mesh.points.length != 3)
-                tri = triangulateMesh(mesh)
+            let tri: FACE[] = [];
+            if (mesh.points.length != 3) {
+                let faces: FACE[] = [mesh]
+                for (let j = 0; j < 10; j++) {
+                    let nf: FACE[] = []
+                    faces.forEach(face => {
+                        PreCreateMesh(face, meshSize).forEach(fc => nf.push(fc))
+                    })
+                    faces = nf
+
+                }
+                faces.forEach(face => {
+                    triangulateMesh(face).forEach(face => tri.push(face))
+                })
+
+            }
             else tri = [mesh];
             tri.forEach(face => {
                 let faces: FACE[] = []
@@ -157,19 +167,51 @@ export function TriangulateBody(body: BODY,meshSize:number) {
 
             });
         })
-        if(nOfPolygons==newMesh.length)
+        if (nOfPolygons == newMesh.length)
             break;
-        nOfPolygons=newMesh.length;
+        nOfPolygons = newMesh.length;
         body.mesh = newMesh;
-        console.log(newMesh)
+        //console.log(newMesh)
     }
-
-    /*for (let i = 0; i < body.faces.length; i++) {
-        body.mesh.shift();
-    }*/
-
-    //console.log(body.mesh[0])
 }
+
+function PreCreateMesh(mesh: FACE, acc: number) {
+    let newMeshes = [mesh];
+    let midPts = [];
+    let j = [];
+    if (mesh.points.length == 4) {
+        for (let i = 0; i < mesh.edges.length; i++) {
+            if (mesh.edges[i].GetLength() >= acc && mesh.edges[i].GetLength() >= mesh.edges[(i + 1) % mesh.edges.length].GetLength()) {
+                j.push(i);
+                midPts.push(MidPoint(mesh.edges[i].points[0], mesh.edges[i].points[1]));
+            }
+        }
+        let newPts = []
+        for (let i = 0; i < 4; i++) {
+            newPts.push(mesh.points[i]);
+            for (let k = 0; k < j.length; k++) {
+                if (j[k] == i) {
+                    newPts.push(midPts[k]);
+                }
+            }
+        }
+        if (newPts.length == 6) {
+            if (j[0] % 2 == 1) {
+                newMeshes = [];
+                newMeshes.push(FACE.CreateFaceFromPoints([newPts[0], newPts[1], newPts[2], newPts[5]]))
+                newMeshes.push(FACE.CreateFaceFromPoints([newPts[5], newPts[2], newPts[3], newPts[4]]))
+            }
+            else
+            {
+                newMeshes = [];
+                newMeshes.push(FACE.CreateFaceFromPoints([newPts[0], newPts[1], newPts[4], newPts[5]]))
+                newMeshes.push(FACE.CreateFaceFromPoints([newPts[1], newPts[2], newPts[3], newPts[4]]))
+            }
+        }
+    }
+    return newMeshes;
+}
+
 function TriangleAccuracy(mesh: FACE, acc: number) {
     let newMeshes = [mesh];
     let j = [];
@@ -211,64 +253,4 @@ function TriangleAccuracy(mesh: FACE, acc: number) {
     }
 
     return newMeshes
-    //return body
-}
-function TriangleCheck(body: BODY) {
-    for (let i = 0; i < body.mesh.length; i++)  {
-        for (let j = i; j < body.mesh.length; j++) {
-            let pts: POINT[] = [];
-            let n = 0;
-            for (let k = 0; k < 3; k++) {
-                for (let m = 0; m < 3; m++) {
-                    if (body.mesh[i].points[k] == body.mesh[j].points[m]) {
-                        n++;
-                        pts.push(body.mesh[i].points[k]);
-                    }
-                }
-            }
-            //console.log(pts)
-            if (n == 2) {
-                // console.log(body.mesh[i])
-                // console.log(body.mesh[j])
-                // console.log(pts)
-                let pt1;
-                let pt2;
-                for (let k = 0; k < 3; k++) {
-                    if (body.mesh[i].points[k] != pts[0] && body.mesh[i].points[k] != pts[1]) {
-                        pt1 = body.mesh[i].points[k];
-                    }
-                    if (body.mesh[j].points[k] != pts[0] && body.mesh[j].points[k] != pts[1]) {
-                        pt2 = body.mesh[j].points[k];
-                    }
-                }
-                // console.log("END")
-                // console.log(pt1)
-                // console.log(pts[0])
-                // console.log(pts[1])
-                // console.log(pt2)
-                let l1 = 0;
-                let l2 = 0;
-                if (pt2 != undefined)
-                    if (POINT.GetLength(pt2, pts[0]) >= POINT.GetLength(pt2, pts[1]))
-                        l1 = POINT.GetLength(pt2, pts[0])
-                if (pt1 != undefined && pt2 != undefined) {
-                    l2 = POINT.GetLength(pt2, pt1)
-                    // console.log(l1)
-                    // console.log(l2)
-                    if (body.mesh.length % 2 == 0) {
-                        if (l2 < l1) {
-                            body.mesh[i] = FACE.CreateFaceFromPoints([pt1, pt2, pts[0]]);
-                            body.mesh[j] = FACE.CreateFaceFromPoints([pt1, pt2, pts[1]]);
-                        }
-                    }
-                    else
-                        if (l2 > l1) {
-                            body.mesh[i] = FACE.CreateFaceFromPoints([pt1, pt2, pts[0]]);
-                            body.mesh[j] = FACE.CreateFaceFromPoints([pt1, pt2, pts[1]]);
-                        }
-                }
-            }
-        }
-
-    }
 }

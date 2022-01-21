@@ -28,7 +28,7 @@ export function CreateObject(x0: number, y0: number, z0: number, w: number, h: n
         let pts: POINT[] = [];
         pts = pts.concat(face1.edges[i].points, face2.edges[i].points.reverse());
         let fc = FACE.CreateFaceFromPoints(pts);
-        console.log(fc);
+        //console.log(fc);
         faces.push(fc)
     }
     let body = BODY.CreateSolid(faces)
